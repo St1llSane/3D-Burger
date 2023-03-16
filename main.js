@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/dracoloader'
 import './style.css'
 
 // Bebug UI
@@ -12,12 +14,37 @@ const canvas = document.querySelector('.canvas')
 // Scene
 const scene = new THREE.Scene()
 
-// Meshes
-const cube = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial()
-)
-scene.add(cube)
+// Materials
+const defMaterial = new THREE.MeshStandardMaterial()
+const floorMaterial = new THREE.MeshStandardMaterial({ color: '#F99F9F' })
+
+/* Objects */
+// Loader
+const loader = new GLTFLoader()
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('./draco/')
+loader.setDRACOLoader(dracoLoader)
+
+loader.load('./burger/Burger.gltf', (gltf) => {
+  gltf.scene.scale.set(0.1, 0.1, 0.1)
+  gltf.scene.position.set(0, -Math.PI / 8, 0)
+  scene.add(gltf.scene)
+})
+/* Objects */
+
+/* Meshes */
+// Floor
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), floorMaterial)
+floor.rotation.set(-Math.PI / 2, 0, 0)
+floor.position.set(0, -1, 0)
+scene.add(floor)
+/* Meshes */
+
+/* Lights */
+const ambientLight = new THREE.AmbientLight('#F9F9F9')
+ambientLight.intensity = 0.8
+scene.add(ambientLight)
+/* Lights */
 
 // Sizes
 const sizes = {
@@ -32,7 +59,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 )
-camera.position.set(1.5, 2, 3)
+camera.position.set(0, 2, 5)
 scene.add(camera)
 
 // Renderer
