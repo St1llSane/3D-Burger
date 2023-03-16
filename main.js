@@ -28,22 +28,47 @@ loader.setDRACOLoader(dracoLoader)
 loader.load('./burger/Burger.gltf', (gltf) => {
   gltf.scene.scale.set(0.1, 0.1, 0.1)
   gltf.scene.position.set(0, -Math.PI / 8, 0)
+  gltf.scene.castShadow = true
+
+  const childer = [...gltf.scene.children]
+  childer.forEach((child) => {
+    child.castShadow = true
+  })
+
   scene.add(gltf.scene)
 })
 /* Objects */
 
 /* Meshes */
+// const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), defMaterial)
+// cube.position.set(2, 0, 0)
+// cube.castShadow = true
+// scene.add(cube)
 // Floor
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), floorMaterial)
 floor.rotation.set(-Math.PI / 2, 0, 0)
-floor.position.set(0, -1, 0)
+floor.position.set(0, -0.5, 0)
+floor.receiveShadow = true
 scene.add(floor)
 /* Meshes */
 
 /* Lights */
+// Ambient light
 const ambientLight = new THREE.AmbientLight('#F9F9F9')
 ambientLight.intensity = 0.8
 scene.add(ambientLight)
+
+// Directional light
+const directionalLight = new THREE.DirectionalLight('#F9F9F9', 0.5)
+directionalLight.position.set(2, 2, 1.5)
+directionalLight.castShadow = true
+scene.add(directionalLight)
+
+const directionalLightHelper = new THREE.DirectionalLightHelper(
+  directionalLight,
+  1
+)
+scene.add(directionalLightHelper)
 /* Lights */
 
 // Sizes
@@ -65,6 +90,8 @@ scene.add(camera)
 // Renderer
 const renderer = new THREE.WebGLRenderer({ canvas })
 renderer.setSize(sizes.width, sizes.height)
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.render(scene, camera)
 
 // Resizing
